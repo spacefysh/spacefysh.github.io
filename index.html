@@ -382,6 +382,8 @@
 			// total visits for the whole site, fetched from goatcounter
 			fetch('https://spacefysh.goatcounter.com/counter/TOTAL.json')
 				.then(function (r) {
+					// goatcounter answers 404 while there are no visits yet, so treat that as 0
+					if (r.status === 404) return { count: '0' };
 					if (!r.ok) throw new Error('counter not available');
 					return r.json();
 				})
