@@ -372,21 +372,28 @@
 			</div>
 
 			<div class="footer">
-				thou hast visited this page <span class="counter" id="visits">000001</span> times<br><br>
+				<span class="counter" id="visits">------</span> souls have entered this crypt<br><br>
 				&copy; 2026 spacefysh &bull; forged in darkness
 			</div>
 
 		</div>
 
 		<script>
-			// count visits on this device only (no tracking, just for fun)
-			try {
-				let n = parseInt(localStorage.getItem('visits') || '0') + 1;
-				localStorage.setItem('visits', n);
-				document.getElementById('visits').textContent = String(n).padStart(6, '0');
-			} catch (e) {
-				// storage blocked, keep the default number
-			}
+			// total visits for the whole site, fetched from goatcounter
+			fetch('https://spacefysh.goatcounter.com/counter/TOTAL.json')
+				.then(function (r) {
+					if (!r.ok) throw new Error('counter not available');
+					return r.json();
+				})
+				.then(function (data) {
+					// count comes back like "1,234", keep only the digits
+					const n = String(data.count).replace(/\D/g, '');
+					document.getElementById('visits').textContent = n.padStart(6, '0');
+				})
+				.catch(function () {
+					// counter blocked or turned off, show a spooky unknown
+					document.getElementById('visits').textContent = '??????';
+				});
 
 			// little crosses falling behind the mouse, skipped if user wants less motion
 			if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -408,6 +415,9 @@
 				});
 			}
 		</script>
+		<!-- goatcounter: counts visits, no cookies -->
+		<script data-goatcounter="https://spacefysh.goatcounter.com/count"
+		        async src="//gc.zgo.at/count.js"></script>
 	</body>
 
 </html>
